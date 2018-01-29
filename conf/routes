@@ -27,3 +27,8 @@ GET     /testeAutenticacao                    controllers.MeuController.testeAut
 
 POST     /postando                    controllers.MeuController.primeiroPost
 POST     /postando2                    controllers.MeuController.postJson
+
+GET     /logging                    controllers.MeuController.logRequest
+POST     /logging                    controllers.MeuController.logRequest2
+
+GET     /content                    controllers.MeuController.contentNegotiation

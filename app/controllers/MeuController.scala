@@ -2,9 +2,18 @@ package controllers
 
 import javax.inject.Inject
 
+import play.api.Logger
+import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.{AbstractController, ControllerComponents}
 
-class MeuController @Inject()(cc : ControllerComponents) extends AbstractController(cc) {
+class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingAction) extends AbstractController(cc) {
+
+  implicit val PessoaWrites = new Writes[Pessoa] {
+    override def writes(o: Pessoa): JsValue = {
+      Json.obj("nome" -> o.name,
+        "idade" -> o.age)
+    }
+  }
 
   def helloWorld = Action { request =>
     Ok("Hello " + request + " World")
@@ -49,6 +58,29 @@ class MeuController @Inject()(cc : ControllerComponents) extends AbstractControl
     Ok(request.body)
   }
 
+  def logRequest = logginAction {
+    Ok("Recebido")
+  }
+
+  def logRequest2 = Logging {
+    Action(parse.tolerantJson) { request =>
+      Ok("Recebido")
+    }
+  }
+
+  def contentNegotiation = Action { implicit request =>
+    val pessoa = new Pessoa("Douglas", 25)
+
+    request.headers.get("Accept").foreach(Logger.info(_))
+    Logger.info(request.acceptedTypes.toString())
+
+    render {
+      case Accepts.Json() => Created(Json.toJson(pessoa))
+    }
+  }
+
+
+
   private def createBoletoTransactionXML() = {
     """<BoletoTransactionResponse>
       <transaction>
@@ -62,4 +94,6 @@ class MeuController @Inject()(cc : ControllerComponents) extends AbstractControl
       </BoletoTransactionResponse>
     """
   }
+
+  case class Pessoa (name: String, age: Int)
 }
