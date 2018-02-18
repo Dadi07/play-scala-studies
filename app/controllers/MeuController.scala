@@ -2,9 +2,15 @@ package controllers
 
 import javax.inject.Inject
 
+import domain.BoletoTransactionDomain
+import domain.BoletoTransactionDomain.BoletoTransaction
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.{AbstractController, ControllerComponents}
+import slick.jdbc.MySQLProfile.api._
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingAction) extends AbstractController(cc) {
 
@@ -12,6 +18,14 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
     override def writes(o: Pessoa): JsValue = {
       Json.obj("nome" -> o.name,
         "idade" -> o.age)
+    }
+  }
+
+  implicit val BoletoTransactionWrites = new Writes[BoletoTransaction] {
+    override def writes(t: BoletoTransaction): JsValue = {
+      Json.obj("reference_code" -> t.referenceCode,
+        "establishment" -> t.establishment,
+      "status" -> t.status)
     }
   }
 
@@ -79,6 +93,27 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
     }
   }
 
+  def transactions = Action.async { implicit  request =>
+    val query = BoletoTransactionDomain.transactions.filter(_.referenceCode === "139911000003789")
+
+    val db  =  Database.forConfig("db")
+
+    val result = query.result
+    val eventualTypes: Future[Seq[BoletoTransactionDomain.BoletoTransaction]] = db.run(result)
+
+    //eventualTypes.foreach(_.foreach(t => Logger.info(t.status)))
+    var jsonTransaction = BoletoTransaction(Option.empty, "123", 2, "teste")
+
+    eventualTypes.map(l => Ok(Json.toJson(l.head)))
+    //eventualTypes.onComplete(t => {
+    //  Logger.info(t.get.head.toString)
+    //  jsonTransaction = t.get.head;
+    //})
+
+    //Logger.info(result.statements.head)
+
+    //Ok(Json.toJson(jsonTransaction))
+  }
 
 
   private def createBoletoTransactionXML() = {

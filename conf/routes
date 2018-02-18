@@ -32,3 +32,5 @@ GET     /logging                    controllers.MeuController.logRequest
 POST     /logging                    controllers.MeuController.logRequest2
 
 GET     /content                    controllers.MeuController.contentNegotiation
+
+GET     /transactions                    controllers.MeuController.transactions
