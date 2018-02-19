@@ -2,14 +2,15 @@ package controllers
 
 import javax.inject.Inject
 
-import domain.BoletoTransactionDomain
+import domain.BoletoGatewayDTO.{BoletoTransactionTO, EstablishmentTO}
+import domain.{BoletoTransactionDomain, EstablishmentDomain}
 import domain.BoletoTransactionDomain.BoletoTransaction
+import domain.EstablishmentDomain.Establishment
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.{AbstractController, ControllerComponents}
 import slick.jdbc.MySQLProfile.api._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingAction) extends AbstractController(cc) {
@@ -26,6 +27,22 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
       Json.obj("reference_code" -> t.referenceCode,
         "establishment" -> t.establishment,
       "status" -> t.status)
+    }
+  }
+
+  implicit val EstablishmentWrites = new Writes[Establishment] {
+    override def writes(e: Establishment): JsValue = {
+      Json.obj("name" -> e.name,
+        "code" -> e.code)
+    }
+  }
+
+  implicit val BoletoTransactionTOWrites = new Writes[BoletoTransactionTO] {
+    override def writes(t: BoletoTransactionTO): JsValue = {
+      Json.obj("reference_code" -> t.referenceCode,
+        "establishment" -> Json.obj("name" -> t.establishment.name,
+        "code" -> t.establishment.code),
+        "status" -> t.status)
     }
   }
 
@@ -93,26 +110,43 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
     }
   }
 
-  def transactions = Action.async { implicit  request =>
-    val query = BoletoTransactionDomain.transactions.filter(_.referenceCode === "139911000003789")
-
+  def transaction = Action.async { implicit  request =>
     val db  =  Database.forConfig("db")
-
+    val query = BoletoTransactionDomain.transactions.filter(_.referenceCode === "139911000003789")
     val result = query.result
-    val eventualTypes: Future[Seq[BoletoTransactionDomain.BoletoTransaction]] = db.run(result)
 
-    //eventualTypes.foreach(_.foreach(t => Logger.info(t.status)))
-    var jsonTransaction = BoletoTransaction(Option.empty, "123", 2, "teste")
+    db.run(result).map(l => Ok(Json.toJson(l.head)))
 
-    eventualTypes.map(l => Ok(Json.toJson(l.head)))
-    //eventualTypes.onComplete(t => {
-    //  Logger.info(t.get.head.toString)
-    //  jsonTransaction = t.get.head;
-    //})
+  }
 
-    //Logger.info(result.statements.head)
+  def establishment = Action.async { implicit  request =>
+    val db  =  Database.forConfig("db")
+    val query = EstablishmentDomain.establishments.filter(_.code === "bpagnovaiorque1")
+    val result = query.result
 
-    //Ok(Json.toJson(jsonTransaction))
+    db.run(result).map(establishments => Ok(Json.toJson(establishments.head)))
+  }
+
+  def searchTransaction(establishment : String, referenceCode : String) = Action.async {
+    val db  =  Database.forConfig("db")
+    val queryEstablishment = EstablishmentDomain.establishments.filter(_.code === establishment)
+    val resultEstablishments = queryEstablishment.result
+
+    val queryTransaction = BoletoTransactionDomain.transactions.filter(_.referenceCode === referenceCode)
+    val resultTransactions = queryTransaction.result
+
+    val dbioAction = resultEstablishments zip resultTransactions
+
+    db.run(dbioAction)
+      .map{ tuple =>
+        val establishmentDb = tuple._1.head
+        val transactionDb = tuple._2.head
+
+        val establishmentTO = EstablishmentTO(establishmentDb.id, establishmentDb.name, establishmentDb.code)
+        val boletoTransaction = BoletoTransactionTO(transactionDb.id, transactionDb.referenceCode, establishmentTO, transactionDb.status)
+
+        Ok(Json.toJson(boletoTransaction))
+      }
   }
 
 

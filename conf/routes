@@ -33,4 +33,8 @@ POST     /logging                    controllers.MeuController.logRequest2
 
 GET     /content                    controllers.MeuController.contentNegotiation
 
-GET     /transactions                    controllers.MeuController.transactions
+GET     /transaction                    controllers.MeuController.transaction
+
+GET     /establishment                    controllers.MeuController.establishment
+
+GET     /establishments/:establishment/transactions/:referenceCode      controllers.MeuController.searchTransaction(establishment, referenceCode)
