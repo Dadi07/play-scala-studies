@@ -2,10 +2,10 @@ package controllers
 
 import javax.inject.Inject
 
-import domain.BoletoGatewayDTO.{BoletoTransactionTO, EstablishmentTO}
+import domain.BoletoGatewayDTO.{BoletoTransaction, Establishment}
 import domain.{BoletoTransactionDomain, EstablishmentDomain}
-import domain.BoletoTransactionDomain.BoletoTransaction
-import domain.EstablishmentDomain.Establishment
+import domain.BoletoTransactionDomain.BoletoTransactionDB
+import domain.EstablishmentDomain.EstablishmentDB
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -22,23 +22,23 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
     }
   }
 
-  implicit val BoletoTransactionWrites = new Writes[BoletoTransaction] {
-    override def writes(t: BoletoTransaction): JsValue = {
+  implicit val BoletoTransactionWrites = new Writes[BoletoTransactionDB] {
+    override def writes(t: BoletoTransactionDB): JsValue = {
       Json.obj("reference_code" -> t.referenceCode,
-        "establishment" -> t.establishment,
+        "establishment" -> t.establishmentId,
       "status" -> t.status)
     }
   }
 
-  implicit val EstablishmentWrites = new Writes[Establishment] {
-    override def writes(e: Establishment): JsValue = {
+  implicit val EstablishmentWrites = new Writes[EstablishmentDB] {
+    override def writes(e: EstablishmentDB): JsValue = {
       Json.obj("name" -> e.name,
         "code" -> e.code)
     }
   }
 
-  implicit val BoletoTransactionTOWrites = new Writes[BoletoTransactionTO] {
-    override def writes(t: BoletoTransactionTO): JsValue = {
+  implicit val BoletoTransactionTOWrites = new Writes[BoletoTransaction] {
+    override def writes(t: BoletoTransaction): JsValue = {
       Json.obj("reference_code" -> t.referenceCode,
         "establishment" -> Json.obj("name" -> t.establishment.name,
         "code" -> t.establishment.code),
@@ -142,8 +142,8 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
         val establishmentDb = tuple._1.head
         val transactionDb = tuple._2.head
 
-        val establishmentTO = EstablishmentTO(establishmentDb.id, establishmentDb.name, establishmentDb.code)
-        val boletoTransaction = BoletoTransactionTO(transactionDb.id, transactionDb.referenceCode, establishmentTO, transactionDb.status)
+        val establishmentTO = Establishment(establishmentDb.id, establishmentDb.name, establishmentDb.code)
+        val boletoTransaction = BoletoTransaction(transactionDb.id, transactionDb.referenceCode, establishmentTO, transactionDb.status, transactionDb.nsuDate, transactionDb.creation)
 
         Ok(Json.toJson(boletoTransaction))
       }

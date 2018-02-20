@@ -1,8 +1,10 @@
 package domain
 
+import java.time.{LocalDate, LocalDateTime}
+
 object BoletoGatewayDTO {
 
-  case class EstablishmentTO(id : Option[Long], name : String, code : String)
-  case class BoletoTransactionTO(id : Option[Long], referenceCode : String, establishment : EstablishmentTO, status : String)
+  case class Establishment(id : Long, name : String, code : String)
+  case class BoletoTransaction(id : Long, referenceCode : String, establishment : Establishment, status : String, nsuDate: LocalDate, creation: LocalDateTime)
 
 }
