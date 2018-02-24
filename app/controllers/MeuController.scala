@@ -142,8 +142,8 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
         val establishmentDb = tuple._1.head
         val transactionDb = tuple._2.head
 
-        val establishmentTO = Establishment(establishmentDb.id, establishmentDb.name, establishmentDb.code)
-        val boletoTransaction = BoletoTransaction(transactionDb.id, transactionDb.referenceCode, establishmentTO, transactionDb.status, transactionDb.nsuDate, transactionDb.creation)
+        val establishment = Establishment(establishmentDb.id, establishmentDb.name, establishmentDb.code)
+        val boletoTransaction = BoletoTransaction(transactionDb.id, transactionDb.referenceCode, establishment, transactionDb.status, transactionDb.nsuDate, transactionDb.creation)
 
         Ok(Json.toJson(boletoTransaction))
       }
