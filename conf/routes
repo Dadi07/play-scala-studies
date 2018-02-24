@@ -38,3 +38,6 @@ GET     /transaction                    controllers.MeuController.transaction
 GET     /establishment                    controllers.MeuController.establishment
 
 GET     /establishments/:establishment/transactions/:referenceCode      controllers.MeuController.searchTransaction(establishment, referenceCode)
+
+
+GET     /configurations     controllers.ConfigurationController.searchConfiguration(key)

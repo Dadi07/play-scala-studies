@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import domain.BoletoGatewayDTO.{BoletoTransaction, Establishment}
+import domain.BoletoGatewayDomain.{BoletoTransaction, Establishment}
 import domain.{BoletoTransactionDomain, EstablishmentDomain}
 import domain.BoletoTransactionDomain.BoletoTransactionDB
 import domain.EstablishmentDomain.EstablishmentDB
