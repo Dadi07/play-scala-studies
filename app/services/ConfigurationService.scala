@@ -3,36 +3,57 @@ package services
 import javax.inject.Singleton
 
 import domain.BoletoGatewayDomain.Configuration
-import domain.ConfigurationDomain.configurations
+import domain.ConfigurationDomain.{ConfigurationDB, configurations}
 import slick.jdbc.MySQLProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait ConfigurationService {
-  def getConfiguration(key: String)(implicit executionContext: ExecutionContext): Future[Configuration]
+  def getConfigurations(key: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[Configuration]]
 
-  def getConfigurationValue(key: String): String
+  def createConfiguration(configuration: Configuration): Future[Long]
 
-  def getConfigurationValues(key: String): List[String]
+  def updateConfiguration(newConfiguration: Configuration): Future[Int]
+
+  def deleteConfiguration(id: Long): Future[Int]
 }
 
 @Singleton
 class ConfigurationServiceImpl extends ConfigurationService {
   lazy val db = Database.forConfig("db")
 
-  override def getConfiguration(key: String)(implicit executionContext: ExecutionContext): Future[Configuration] = {
-    val dbioAction = configurations.filter(_.key === key).result
+  override def getConfigurations(key: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[Configuration]] = {
+    val dbioAction = configurations.filter(c =>
+      key.map(k => c.key like s"%$k%")
+        .getOrElse(LiteralColumn(true))
+    ).result
 
     db.run(dbioAction)
-      .filter(_.size == 1)
       .map { seq =>
-        val configurationDb = seq.head
-
-        Configuration(configurationDb.id, configurationDb.key, configurationDb.value.getOrElse("defaultValue"))
+        seq.map { configurationDb =>
+          // TODO ver o que fazer no caso default
+          Configuration(configurationDb.id, configurationDb.key, configurationDb.value.getOrElse("defaultValue"))
+        }
       }
   }
 
-  override def getConfigurationValue(key: String): String = ???
+  override def createConfiguration(configuration: Configuration): Future[Long] = {
+    val configId = configurations returning configurations.map(_.id) += ConfigurationDB(0, configuration.key, Option(configuration.value))
 
-  override def getConfigurationValues(key: String): List[String] = ???
+    db.run(configId)
+  }
+
+  override def updateConfiguration(newConfiguration: Configuration): Future[Int] = {
+    val updateConfiguration = configurations.filter(_.id === newConfiguration.id)
+      .map(config => (config.key, config.value))
+      .update((newConfiguration.key, Option(newConfiguration.value)))
+
+    db.run(updateConfiguration)
+  }
+
+  override def deleteConfiguration(id: Long): Future[Int] = {
+    val deleteConfiguration = configurations.filter(_.id === id).delete
+
+    db.run(deleteConfiguration)
+  }
 }

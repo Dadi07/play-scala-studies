@@ -40,4 +40,11 @@ GET     /establishment                    controllers.MeuController.establishmen
 GET     /establishments/:establishment/transactions/:referenceCode      controllers.MeuController.searchTransaction(establishment, referenceCode)
 
 
-GET     /configurations     controllers.ConfigurationController.searchConfiguration(key)
+# routes for configuration
+GET     /configurations         controllers.ConfigurationController.searchConfiguration(key: Option[String])
+
+POST    /configurations         controllers.ConfigurationController.createConfiguration
+
+PUT     /configurations/:id     controllers.ConfigurationController.changeConfiguration(id: Long)
+
+DELETE  /configurations/:id     controllers.ConfigurationController.removeConfiguration(id: Long)
