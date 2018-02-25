@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import domain.BoletoGatewayDomain.Configuration
 import domain.ResponseWriters.ConfigurationWrites
@@ -12,6 +12,7 @@ import services.ConfigurationService
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
+@Singleton
 class ConfigurationController @Inject()(cc: ControllerComponents, configurationService: ConfigurationService) extends AbstractController(cc) {
 
   def createConfiguration() = Action.async(parse.tolerantJson) { request: Request[JsValue] =>

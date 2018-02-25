@@ -2,9 +2,9 @@ package controllers
 
 import javax.inject.Inject
 
-import domain.BoletoGatewayDomain.{BoletoTransaction, Establishment}
+import domain.BoletoGatewayDomain.{Transaction, Establishment}
 import domain.{BoletoTransactionDomain, EstablishmentDomain}
-import domain.BoletoTransactionDomain.BoletoTransactionDB
+import domain.BoletoTransactionDomain.TransactionDB
 import domain.EstablishmentDomain.EstablishmentDB
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json, Writes}
@@ -22,8 +22,8 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
     }
   }
 
-  implicit val BoletoTransactionWrites = new Writes[BoletoTransactionDB] {
-    override def writes(t: BoletoTransactionDB): JsValue = {
+  implicit val BoletoTransactionWrites = new Writes[TransactionDB] {
+    override def writes(t: TransactionDB): JsValue = {
       Json.obj("reference_code" -> t.referenceCode,
         "establishment" -> t.establishmentId,
       "status" -> t.status)
@@ -37,8 +37,8 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
     }
   }
 
-  implicit val BoletoTransactionTOWrites = new Writes[BoletoTransaction] {
-    override def writes(t: BoletoTransaction): JsValue = {
+  implicit val BoletoTransactionTOWrites = new Writes[Transaction] {
+    override def writes(t: Transaction): JsValue = {
       Json.obj("reference_code" -> t.referenceCode,
         "establishment" -> Json.obj("name" -> t.establishment.name,
         "code" -> t.establishment.code),

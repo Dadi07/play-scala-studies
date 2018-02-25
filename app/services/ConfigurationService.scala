@@ -4,6 +4,7 @@ import javax.inject.Singleton
 
 import domain.BoletoGatewayDomain.Configuration
 import domain.ConfigurationDomain.{ConfigurationDB, configurations}
+import services.RepositoryUtils.db
 import slick.jdbc.MySQLProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -20,7 +21,6 @@ sealed trait ConfigurationService {
 
 @Singleton
 class ConfigurationServiceImpl extends ConfigurationService {
-  lazy val db = Database.forConfig("db")
 
   override def getConfigurations(key: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[Configuration]] = {
     val dbioAction = configurations.filter(c =>
