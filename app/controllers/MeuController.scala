@@ -127,27 +127,27 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
     db.run(result).map(establishments => Ok(Json.toJson(establishments.head)))
   }
 
-  def searchTransaction(establishment : String, referenceCode : String) = Action.async {
-    val db  =  Database.forConfig("db")
-    val queryEstablishment = EstablishmentDomain.establishments.filter(_.code === establishment)
-    val resultEstablishments = queryEstablishment.result
-
-    val queryTransaction = BoletoTransactionDomain.transactions.filter(_.referenceCode === referenceCode)
-    val resultTransactions = queryTransaction.result
-
-    val dbioAction = resultEstablishments zip resultTransactions
-
-    db.run(dbioAction)
-      .map{ tuple =>
-        val establishmentDb = tuple._1.head
-        val transactionDb = tuple._2.head
-
-        val establishment = Establishment(establishmentDb.id, establishmentDb.name, establishmentDb.code)
-        val boletoTransaction = BoletoTransaction(transactionDb.id, transactionDb.referenceCode, establishment, transactionDb.status, transactionDb.nsuDate, transactionDb.creation)
-
-        Ok(Json.toJson(boletoTransaction))
-      }
-  }
+//  def searchTransaction(establishment : String, referenceCode : String) = Action.async {
+//    val db  =  Database.forConfig("db")
+//    val queryEstablishment = EstablishmentDomain.establishments.filter(_.code === establishment)
+//    val resultEstablishments = queryEstablishment.result
+//
+//    val queryTransaction = BoletoTransactionDomain.transactions.filter(_.referenceCode === referenceCode)
+//    val resultTransactions = queryTransaction.result
+//
+//    val dbioAction = resultEstablishments zip resultTransactions
+//
+//    db.run(dbioAction)
+//      .map{ tuple =>
+//        val establishmentDb = tuple._1.head
+//        val transactionDb = tuple._2.head
+//
+//        val establishment = Establishment(establishmentDb.id, establishmentDb.name, establishmentDb.code)
+//        val boletoTransaction = BoletoTransaction(transactionDb.id, transactionDb.referenceCode, establishment, transactionDb.status, transactionDb.nsuDate, transactionDb.creation)
+//
+//        Ok(Json.toJson(boletoTransaction))
+//      }
+//  }
 
 
   private def createBoletoTransactionXML() = {

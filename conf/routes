@@ -33,11 +33,11 @@ POST     /logging                    controllers.MeuController.logRequest2
 
 GET     /content                    controllers.MeuController.contentNegotiation
 
-GET     /transaction                    controllers.MeuController.transaction
+#GET     /transaction                    controllers.MeuController.transaction
 
 GET     /establishment                    controllers.MeuController.establishment
 
-GET     /establishments/:establishment/transactions/:referenceCode      controllers.MeuController.searchTransaction(establishment, referenceCode)
+#GET     /establishments/:establishment/transactions/:referenceCode      controllers.MeuController.searchTransaction(establishment, referenceCode)
 
 
 # routes for configuration
@@ -48,3 +48,5 @@ POST    /configurations         controllers.ConfigurationController.createConfig
 PUT     /configurations/:id     controllers.ConfigurationController.changeConfiguration(id: Long)
 
 DELETE  /configurations/:id     controllers.ConfigurationController.removeConfiguration(id: Long)
+
+GET     /transactions         controllers.TransactionController.searchTransaction(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String])

@@ -1,8 +1,8 @@
 package domain
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 
-import domain.DomainUtils.localDateConverter
+import DomainUtils.localDateTimeConverter
 import slick.jdbc.MySQLProfile.api._
 import slick.lifted.Tag
 
@@ -10,7 +10,7 @@ object CascadeLogDomain {
 
   case class CascadeLogDB(id: Long, ruleCode: String)
 
-  case class CascadeLogItemDB(id: Long, cascadeLogId: Long, codeBank: String, responseCode: Option[String], responseMessage: Option[String], exception: Option[String], creation: LocalDate)
+  case class CascadeLogItemDB(id: Long, cascadeLogId: Long, codeBank: String, responseCode: Option[String], responseMessage: Option[String], exception: Option[String], creation: LocalDateTime)
 
   class CascadeLogTable(tag: Tag) extends Table[CascadeLogDB](tag, "cascade_log") {
     def id = column[Long]("idt_cascade_log", O.PrimaryKey, O.AutoInc)
@@ -33,13 +33,11 @@ object CascadeLogDomain {
 
     def exception = column[Option[String]]("des_exception")
 
-    def creation = column[LocalDate]("dat_creation")
+    def creation = column[LocalDateTime]("dat_creation")
 
     def * = (id, cascadeLogId, codeBank, responseCode, responseMessage, exception, creation) <> ((CascadeLogItemDB.apply _).tupled, CascadeLogItemDB.unapply)
 
-    def cascacadeLog = foreignKey("casclog_cascade_log_item_fk", cascadeLogId, cascadeLogs)(_.id)
-
-    def cascadeLog = foreignKey("casclog_cascade_log_item_fk", cascadeLogId, cascadeLogs)
+    def cascadeLog = foreignKey("casclog_cascade_log_item_fk", cascadeLogId, cascadeLogs)(_.id)
   }
 
   val cascadeLogs = TableQuery[CascadeLogTable]
