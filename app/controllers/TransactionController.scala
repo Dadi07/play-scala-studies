@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import controllers.ResponseWriters.TransactionWrites
+import controllers.ResponseWriters.transactionWrites
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 import services.TransactionRepository
