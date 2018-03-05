@@ -13,8 +13,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class TransactionController @Inject()(cc: ControllerComponents, transactionRepository: TransactionRepository) extends AbstractController(cc) {
 
   def searchTransaction(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String]) = Action.async {
-    transactionRepository.findTransactionsByReference(referenceCode.get)
-      .map(t => Ok(Json.toJson(t)))
+    transactionRepository.findTransactionsByReference(referenceCode, bank)
+      .map(seq =>
+        if(seq.isEmpty) NotFound else Ok(Json.toJson(seq))
+      )
   }
 
 }

@@ -123,7 +123,7 @@ object ResponseWriters {
         "reference_code" -> t.referenceCode,
         "establishment" -> t.establishment,
         "status" -> t.normalizedStatus,
-        "bank" -> Json.obj("name" -> t.bank.get.code,
+        "bank" -> Json.obj("name" -> t.bank.map(_.code),
           "response" -> Json.obj("code" -> t.bankResponseCode,
             "message" -> t.bankResponseStatus)),
         "boleto" -> t.boleto,
