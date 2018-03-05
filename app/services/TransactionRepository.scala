@@ -5,10 +5,11 @@ import javax.inject.Singleton
 import domain.BankDomain
 import domain.BankDomain.{BankDB, banks}
 import domain.BoletoGatewayDomain._
-import domain.BoletoTransactionDomain._
+import domain.BoletoTransactionDomain.{BoletoDB, TransactionDB, _}
 import domain.CascadeLogDomain.{CascadeLogDB, CascadeLogItemDB, cascadeLogItems, cascadeLogs}
-import domain.EstablishmentDomain._
+import domain.EstablishmentDomain.{EstablishmentDB, _}
 import domain.NormalizedStatusDomain.{NormalizedStatusDB, normalizedStatus}
+import play.api.Logger
 import services.RepositoryUtils.db
 import slick.jdbc.MySQLProfile.api._
 
@@ -16,22 +17,34 @@ import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait TransactionRepository {
 
-  def findTransactionsByReference(referenceCode: Option[String], bank: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[Transaction]]
+  def findTransactionsByReference(transactionFilters: TransactionFilters)(implicit executionContext: ExecutionContext): Future[Seq[Transaction]]
 }
+
+case class TransactionFilters(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String], normalizedStatus: Option[String], amount: Option[Int])
 
 @Singleton
 class TransactionRepositoryImpl extends TransactionRepository {
-  override def findTransactionsByReference(referenceCode: Option[String], bank: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[Transaction]] = {
-    val filterTransaction = referenceCode.map(r => transactions.filter(_.referenceCode === r)).getOrElse(transactions)
-    val filterBank = bank.map(s => banks.filter(_.code === s)).getOrElse(banks)
+  override def findTransactionsByReference(transactionFilters: TransactionFilters)(implicit executionContext: ExecutionContext): Future[Seq[Transaction]] = {
+    val filterTransaction = transactionFilters.referenceCode.map(r => transactions.filter(_.referenceCode === r)).getOrElse(transactions)
+    val filterEstablishment = transactionFilters.establishment.map(e => establishments.filter(_.code === e)).getOrElse(establishments)
+    val filterBoletoByBankNumber = transactionFilters.bankNumber.map(bn => boletos.filter(_.bankNumber === bn)).getOrElse(boletos)
+    val filterBoleto = transactionFilters.amount.map(a => filterBoletoByBankNumber.filter(_.amount === a)).getOrElse(filterBoletoByBankNumber)
+    val filterBank = transactionFilters.bank.map(s => banks.filter(_.code === s)).getOrElse(banks)
+    val filterNormalizedStatus = transactionFilters.normalizedStatus.map(n => normalizedStatus.filter(_.messsage === n)).getOrElse(normalizedStatus)
 
     val transactionQuery = for {
-      (((((((t, e), bo), ba), n), c), ci),p) <- filterTransaction join establishments on (_.establishmentId === _.id) join boletos on (_._1.boletoId === _.id) joinLeft filterBank on (_._1._1.bankId === _.id) joinLeft  normalizedStatus on (_._1._1._1.normalizedStatusId === _.id) joinLeft cascadeLogs on (_._1._1._1._1.cascadeLogId === _.id) joinLeft cascadeLogItems on (_._2.map(_.id) === _.cascadeLogId) joinLeft payments on (_._1._1._1._1._1._1.id === _.transactionId)
+      (((((((t, e), bo), ba), n), c), ci), p) <- filterTransaction join filterEstablishment on (_.establishmentId === _.id) join filterBoleto on (_._1.boletoId === _.id) joinLeft filterBank on (_._1._1.bankId === _.id) joinLeft filterNormalizedStatus on (_._1._1._1.normalizedStatusId === _.id) joinLeft cascadeLogs on (_._1._1._1._1.cascadeLogId === _.id) joinLeft cascadeLogItems on (_._2.map(_.id) === _.cascadeLogId) joinLeft payments on (_._1._1._1._1._1._1.id === _.transactionId)
     } yield (t, e, bo, ba, n, c, ci, p)
 
-    db.run(transactionQuery.take(100).result)
-      .map(seq => mapTableRows(seq))
-      .map { _.map { tuple =>
+    val result = transactionQuery.take(100).result
+
+    Logger.info(result.statements.toString())
+
+    db.run(result)
+      .map(mapTableRows(_))
+      .map(seq => seq.filter(shouldFilterTuple(_)))
+      .map {
+        _.map { tuple =>
           val establishment = new Establishment(tuple._2)
           val boleto = new Boleto(tuple._3)
           val optionBank = tuple._4.map(new Bank(_))
@@ -58,5 +71,9 @@ class TransactionRepositoryImpl extends TransactionRepository {
         (head._1, head._2, head._3, head._4, head._5, head._6, seqCascadeLogItem, seqPayment)
       }.toIndexedSeq
     }
+  }
+
+  private def shouldFilterTuple(tuple: (TransactionDB, EstablishmentDB, BoletoDB, Option[BankDB], Option[NormalizedStatusDB], Option[CascadeLogDB], Seq[CascadeLogItemDB], Seq[PaymentDB])): Boolean = {
+    tuple._4.isDefined
   }
 }
