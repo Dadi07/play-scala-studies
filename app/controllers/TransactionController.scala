@@ -18,8 +18,13 @@ class TransactionController @Inject()(cc: ControllerComponents, transactionRepos
     Logger.info(s"action=endpoint-request uri=/transacions/$id method=GET")
     transactionRepository.findById(id)
       .map { transaction =>
-        Logger.info(s"action=endpoint-response uri=/transacions/$id method=GET ")
-        if (transaction.isEmpty) NotFound else Ok(Json.toJson(transaction))
+        if (transaction.isEmpty) {
+          Logger.info(s"action=endpoint-response uri=/transacions/$id method=GET status=not-found")
+          NotFound
+        } else {
+          Logger.info(s"action=endpoint-response uri=/transacions/$id method=GET status=ok")
+          Ok(Json.toJson(transaction))
+        }
       }
   }
 
