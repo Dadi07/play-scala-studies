@@ -50,3 +50,7 @@ PUT     /configurations/:id     controllers.ConfigurationController.changeConfig
 DELETE  /configurations/:id     controllers.ConfigurationController.removeConfiguration(id: Long)
 
 GET     /transactions           controllers.TransactionController.searchTransaction(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String], status: Option[String], amount: Option[Int])
+
+GET     /transactions/:id       controllers.TransactionController.searchTransaction3(id: Long)
+
+GET     /transactions2          controllers.TransactionController.searchTransaction2(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String], status: Option[String], amount: Option[Int])

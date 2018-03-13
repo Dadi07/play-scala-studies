@@ -3,6 +3,7 @@ package controllers
 import domain.BoletoGatewayDomain._
 import play.api.libs.json.{JsPath, JsValue, Json, Writes}
 import play.api.libs.functional.syntax._
+import services.TransactionSearchData
 
 object ResponseWriters {
   implicit val configurationWrites = new Writes[Configuration] {
@@ -132,6 +133,18 @@ object ResponseWriters {
         "notification_url" -> t.notificationUrl,
         "creation" -> t.creation,
         "updated" -> t.updated)
+    }
+  }
+
+  implicit val transactionSearchWrites = new Writes[TransactionSearchData] {
+    override def writes(t: TransactionSearchData): JsValue = {
+      Json.obj("id" -> t.id,
+      "reference_code" -> t.referenceCode,
+      "establishment" -> t.establishment,
+      "bank_number" -> t.bankNumber,
+      "bank" -> t.bank,
+      "amount" -> t.amount,
+      "status" -> t.status)
     }
   }
 }
