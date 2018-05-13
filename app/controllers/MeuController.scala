@@ -1,11 +1,7 @@
 package controllers
 
+import domain._
 import javax.inject.Inject
-
-import domain.BoletoGatewayDomain.{Transaction, Establishment}
-import domain.{BoletoTransactionDomain, EstablishmentDomain}
-import domain.BoletoTransactionDomain.TransactionDB
-import domain.EstablishmentDomain.EstablishmentDB
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -112,7 +108,7 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
 
   def transaction = Action.async { implicit  request =>
     val db  =  Database.forConfig("db")
-    val query = BoletoTransactionDomain.transactions.filter(_.referenceCode === "139911000003789")
+    val query = Tables.transactions.filter(_.referenceCode === "139911000003789")
     val result = query.result
 
     db.run(result).map(l => Ok(Json.toJson(l.head)))
@@ -121,7 +117,7 @@ class MeuController @Inject()(cc : ControllerComponents, logginAction : LoggingA
 
   def establishment = Action.async { implicit  request =>
     val db  =  Database.forConfig("db")
-    val query = EstablishmentDomain.establishments.filter(_.code === "bpagnovaiorque1")
+    val query = Tables.establishments.filter(_.code === "bpagnovaiorque1")
     val result = query.result
 
     db.run(result).map(establishments => Ok(Json.toJson(establishments.head)))

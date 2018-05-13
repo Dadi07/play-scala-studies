@@ -1,13 +1,7 @@
 package services
 
+import domain._
 import javax.inject.Singleton
-
-import domain.BankDomain.{BankDB, banks}
-import domain.BoletoGatewayDomain._
-import domain.BoletoTransactionDomain.{BoletoDB, TransactionDB, _}
-import domain.CascadeLogDomain.{CascadeLogDB, CascadeLogItemDB, cascadeLogItems, cascadeLogs}
-import domain.EstablishmentDomain.{EstablishmentDB, _}
-import domain.NormalizedStatusDomain.{NormalizedStatusDB, normalizedStatus}
 import services.RepositoryUtils.db
 import slick.jdbc.MySQLProfile.api._
 
@@ -26,11 +20,12 @@ case class TransactionSearchData(id: Long, referenceCode: String, bankNumber: Op
 
 @Singleton
 class TransactionRepositoryImpl extends TransactionRepository {
+
   override def findById(id: Long)(implicit executionContext: ExecutionContext): Future[Option[Transaction]] = {
-    val transactionFilter = transactions.filter(_.id === id)
+    val transactionFilter = Tables.transactions.filter(_.id === id)
 
     val transactionQuery = for {
-      (((((((t, e), bo), ba), n), c), ci), p) <- transactionFilter join establishments on (_.establishmentId === _.id) join boletos on (_._1.boletoId === _.id) join banks on (_._1._1.bankId === _.id) join normalizedStatus on (_._1._1._1.normalizedStatusId === _.id) joinLeft cascadeLogs on (_._1._1._1._1.cascadeLogId === _.id) joinLeft cascadeLogItems on (_._2.map(_.id) === _.cascadeLogId) joinLeft payments on (_._1._1._1._1._1._1.id === _.transactionId)
+      (((((((t, e), bo), ba), n), c), ci), p) <- transactionFilter join Tables.establishments on (_.establishmentId === _.id) join Tables.boletos on (_._1.boletoId === _.id) join Tables.banks on (_._1._1.bankId === _.id) join Tables.normalizedStatus on (_._1._1._1.normalizedStatusId === _.id) joinLeft Tables.cascadeLogs on (_._1._1._1._1.cascadeLogId === _.id) joinLeft Tables.cascadeLogItems on (_._2.map(_.id) === _.cascadeLogId) joinLeft Tables.payments on (_._1._1._1._1._1._1.id === _.transactionId)
     } yield (t, e, bo, ba, n, c, ci, p)
 
     db.run(transactionQuery.result)
@@ -51,12 +46,12 @@ class TransactionRepositoryImpl extends TransactionRepository {
 
 
   override def findTransactionsByFilter(transactionFilters: TransactionFilters)(implicit executionContext: ExecutionContext): Future[Seq[TransactionSearchData]] = {
-    val filterTransactionByStatus = transactionFilters.status.map(s => transactions.filter(_.status === s)).getOrElse(transactions)
+    val filterTransactionByStatus = transactionFilters.status.map(s => Tables.transactions.filter(_.status === s)).getOrElse(Tables.transactions)
     val filterTransaction = transactionFilters.referenceCode.map(r => filterTransactionByStatus.filter(_.referenceCode === r)).getOrElse(filterTransactionByStatus)
-    val filterEstablishment = transactionFilters.establishment.map(e => establishments.filter(_.code === e)).getOrElse(establishments)
-    val filterBoletoByBankNumber = transactionFilters.bankNumber.map(bn => boletos.filter(_.bankNumber === bn)).getOrElse(boletos)
+    val filterEstablishment = transactionFilters.establishment.map(e => Tables.establishments.filter(_.code === e)).getOrElse(Tables.establishments)
+    val filterBoletoByBankNumber = transactionFilters.bankNumber.map(bn => Tables.boletos.filter(_.bankNumber === bn)).getOrElse(Tables.boletos)
     val filterBoleto = transactionFilters.amount.map(a => filterBoletoByBankNumber.filter(_.amount === a)).getOrElse(filterBoletoByBankNumber)
-    val filterBank = transactionFilters.bank.map(s => banks.filter(_.code === s)).getOrElse(banks)
+    val filterBank = transactionFilters.bank.map(s => Tables.banks.filter(_.code === s)).getOrElse(Tables.banks)
 
     val transactionQuery = for {
       (((t, e), bo), ba) <- filterTransaction join filterEstablishment on (_.establishmentId === _.id) join filterBoleto on (_._1.boletoId === _.id) join filterBank on (_._1._1.bankId === _.id)

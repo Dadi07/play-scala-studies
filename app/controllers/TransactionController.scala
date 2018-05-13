@@ -1,9 +1,7 @@
 package controllers
 
+import controllers.ResponseWriters.{transactionSearchWrites, transactionWrites}
 import javax.inject.{Inject, Singleton}
-
-import controllers.ResponseWriters.transactionWrites
-import controllers.ResponseWriters.transactionSearchWrites
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -33,8 +31,7 @@ class TransactionController @Inject()(cc: ControllerComponents, transactionRepos
     Logger.info(s"action=endpoint-request uri=/transacions method=GET $transactionFilters")
     transactionRepository.findTransactionsByFilter(transactionFilters)
       .map { seq =>
-        val size = seq.size
-        Logger.info(s"action=endpoint-response uri=/transacions method=GET $transactionFilters $size transactions found")
+        Logger.info(s"action=endpoint-response uri=/transacions method=GET $transactionFilters ${seq.size} transactions found")
         if (seq.isEmpty) NotFound else Ok(Json.toJson(seq))
       }
   }

@@ -1,9 +1,8 @@
 package controllers
 
+import controllers.ResponseWriters.configurationWrites
+import domain.Configuration
 import javax.inject.{Inject, Singleton}
-
-import domain.BoletoGatewayDomain.Configuration
-import ResponseWriters.configurationWrites
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AbstractController, ControllerComponents, Request}

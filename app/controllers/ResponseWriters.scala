@@ -1,8 +1,7 @@
 package controllers
 
-import domain.BoletoGatewayDomain._
-import play.api.libs.json.{JsPath, JsValue, Json, Writes}
-import play.api.libs.functional.syntax._
+import domain._
+import play.api.libs.json.{JsValue, Json, Writes}
 import services.TransactionSearchData
 
 object ResponseWriters {

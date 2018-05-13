@@ -4,17 +4,14 @@ import slick.lifted.Tag
 
 import slick.jdbc.MySQLProfile.api._
 
-object NormalizedStatusDomain {
+case class NormalizedStatusDB(id: Long, code: String, message: String)
 
-  case class NormalizedStatusDB(id : Long, code : String, message : String)
+class NormalizedStatusTable(tag: Tag) extends Table[NormalizedStatusDB](tag, "normalized_status") {
+  def id = column[Long]("idt_normalized_status", O.PrimaryKey, O.AutoInc)
 
-  class NormalizedStatusTable(tag: Tag) extends Table[NormalizedStatusDB](tag, "normalized_status") {
-    def id = column[Long]("idt_normalized_status", O.PrimaryKey, O.AutoInc)
-    def code = column[String]("cod_status", O.Unique)
-    def messsage = column[String]("des_status")
+  def code = column[String]("cod_status", O.Unique)
 
-    def * = (id, code, messsage) <> ((NormalizedStatusDB.apply _).tupled, NormalizedStatusDB.unapply)
-  }
+  def messsage = column[String]("des_status")
 
-  val normalizedStatus = TableQuery[NormalizedStatusTable]
+  def * = (id, code, messsage) <> ((NormalizedStatusDB.apply _).tupled, NormalizedStatusDB.unapply)
 }
