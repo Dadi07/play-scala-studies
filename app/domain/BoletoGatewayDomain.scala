@@ -123,5 +123,4 @@ object BoletoGatewayDomain {
   }
 
   case class Configuration(id: Long = 0, key: String, value: String)
-
 }

@@ -7,13 +7,13 @@ import ResponseWriters.configurationWrites
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AbstractController, ControllerComponents, Request}
-import services.ConfigurationService
+import services.ConfigurationRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 @Singleton
-class ConfigurationController @Inject()(cc: ControllerComponents, configurationService: ConfigurationService) extends AbstractController(cc) {
+class ConfigurationController @Inject()(cc: ControllerComponents, configurationService: ConfigurationRepository) extends AbstractController(cc) {
 
   def createConfiguration() = Action.async(parse.tolerantJson) { request: Request[JsValue] =>
     val jsonBody = request.body

@@ -9,7 +9,7 @@ import slick.jdbc.MySQLProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-sealed trait ConfigurationService {
+sealed trait ConfigurationRepository {
   def getConfigurations(key: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[Configuration]]
 
   def createConfiguration(configuration: Configuration): Future[Long]
@@ -20,7 +20,7 @@ sealed trait ConfigurationService {
 }
 
 @Singleton
-class ConfigurationServiceImpl extends ConfigurationService {
+class ConfigurationRepositoryImpl extends ConfigurationRepository {
 
   override def getConfigurations(key: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[Configuration]] = {
     val dbioAction = configurations.filter(c =>
