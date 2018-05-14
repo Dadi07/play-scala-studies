@@ -43,6 +43,11 @@ GET     /establishment                    controllers.MeuController.establishmen
 # routes for bank
 GET     /banks         controllers.BankController.searchBank(code: Option[String])
 
+# routes for normalizedStatus
+GET     /normalized-status         controllers.NormalizedStatusController.searchNormalizedStatus(code: Option[String])
+
+GET     /normalized-status/:id         controllers.NormalizedStatusController.searchFullNormalizedStatus(id: Long)
+
 # routes for configuration
 GET     /configurations         controllers.ConfigurationController.searchConfiguration(key: Option[String])
 

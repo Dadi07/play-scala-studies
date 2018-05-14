@@ -1,8 +1,8 @@
 package controllers
 
 import domain._
-import play.api.libs.json.{JsValue, Json, Writes}
-import services.TransactionSearchData
+import play.api.libs.json.{JsObject, JsValue, Json, Writes}
+import services.{NormalizedStatusFullData, TransactionSearchData}
 
 object ResponseWriters {
 
@@ -92,8 +92,30 @@ object ResponseWriters {
 
   implicit val normalizedStatusWrites = new Writes[NormalizedStatus] {
     override def writes(n: NormalizedStatus): JsValue = {
-      Json.obj("code" -> n.code,
+      Json.obj("id" -> n.id,
+        "code" -> n.code,
         "message" -> n.message)
+    }
+  }
+
+  implicit val bankResponseStatusWrites = new Writes[BankResponseStatus] {
+    override def writes(b: BankResponseStatus): JsValue = {
+      Json.obj("id" -> b.id,
+        "code" -> b.code,
+        "message" -> b.message,
+        "isInternalError" -> b.internalError,
+        "bank" -> b.bank.name,
+        "normalizedStatus" -> normalizedStatusSimpleJson(Option(b.normalizedStatus)))
+    }
+  }
+
+  //TODO ver uuma forma de os bankResponses nao duplicarem a informação do normalizedStatus
+  implicit val normalizedStatusFullDataWrites = new Writes[NormalizedStatusFullData] {
+    override def writes(n: NormalizedStatusFullData): JsValue = {
+      Json.obj("id" -> n.normalizedStatus.id,
+        "code" -> n.normalizedStatus.code,
+        "message" -> n.normalizedStatus.message,
+        "bankResponses" -> n.bankResponses)
     }
   }
 
@@ -131,7 +153,7 @@ object ResponseWriters {
       Json.obj("id" -> t.id,
         "reference_code" -> t.referenceCode,
         "establishment" -> t.establishment,
-        "status" -> t.normalizedStatus,
+        "status" -> normalizedStatusSimpleJson(t.normalizedStatus),
         "bank" -> Json.obj("name" -> t.bank.map(_.code),
           "response" -> Json.obj("code" -> t.bankResponseCode,
             "message" -> t.bankResponseStatus)),
@@ -147,12 +169,17 @@ object ResponseWriters {
   implicit val transactionSearchWrites = new Writes[TransactionSearchData] {
     override def writes(t: TransactionSearchData): JsValue = {
       Json.obj("id" -> t.id,
-      "reference_code" -> t.referenceCode,
-      "establishment" -> t.establishment,
-      "bank_number" -> t.bankNumber,
-      "bank" -> t.bank,
-      "amount" -> t.amount,
-      "status" -> t.status)
+        "reference_code" -> t.referenceCode,
+        "establishment" -> t.establishment,
+        "bank_number" -> t.bankNumber,
+        "bank" -> t.bank,
+        "amount" -> t.amount,
+        "status" -> t.status)
     }
+  }
+
+  private def normalizedStatusSimpleJson(normalizedStatus: Option[NormalizedStatus]): JsObject = {
+    Json.obj("code" -> normalizedStatus.map(_.code),
+      "message" -> normalizedStatus.map(_.message))
   }
 }

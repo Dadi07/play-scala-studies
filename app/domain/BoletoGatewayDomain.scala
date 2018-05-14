@@ -23,8 +23,12 @@ case class Bank(id: Long, code: String, name: String) {
   def this(b: BankDB) = this(b.id, b.code, b.name)
 }
 
-case class NormalizedStatus(code: String, message: String) {
-  def this(n: NormalizedStatusDB) = this(n.code, n.message)
+case class NormalizedStatus(id: Long, code: String, message: String) {
+  def this(n: NormalizedStatusDB) = this(n.id, n.code, n.message)
+}
+
+case class BankResponseStatus(id: Long, code: String, message: String, internalError: Boolean, bank: Bank, normalizedStatus: NormalizedStatus) {
+  def this(b: BankResponseStatusDB, bank: Bank, normalizedStatus: NormalizedStatus) = this(b.id, b.code, b.message, b.internalError, bank, normalizedStatus)
 }
 
 case class CascadeLog(rule: String, items: Seq[CascadeLogItem]) {

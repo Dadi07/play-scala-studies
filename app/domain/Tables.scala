@@ -8,6 +8,7 @@ object Tables {
   val establishments = TableQuery[EstablishmentTable]
 
   val normalizedStatus = TableQuery[NormalizedStatusTable]
+  val bankResponseStatus = TableQuery[BankResponseStatusTable]
 
   val configurations = TableQuery[ConfigurationTable]
   val configurationsMultValue = TableQuery[ConfigurationMultValueTable]
