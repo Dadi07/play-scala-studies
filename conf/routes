@@ -40,6 +40,9 @@ GET     /establishment                    controllers.MeuController.establishmen
 #GET     /establishments/:establishment/transactions/:referenceCode      controllers.MeuController.searchTransaction(establishment, referenceCode)
 
 
+# routes for bank
+GET     /banks         controllers.BankController.searchBank(code: Option[String])
+
 # routes for configuration
 GET     /configurations         controllers.ConfigurationController.searchConfiguration(key: Option[String])
 
@@ -49,6 +52,7 @@ PUT     /configurations/:id     controllers.ConfigurationController.changeConfig
 
 DELETE  /configurations/:id     controllers.ConfigurationController.removeConfiguration(id: Long)
 
+# routes for transaction
 GET     /transactions/:id       controllers.TransactionController.searchTransaction(id: Long)
 
 GET     /transactions           controllers.TransactionController.searchTransactions(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String], status: Option[String], amount: Option[Int])

@@ -19,8 +19,8 @@ case class Establishment(id: Long, name: String, code: String) {
   def this(e: EstablishmentDB) = this(e.id, e.name, e.code)
 }
 
-case class Bank(code: String, name: String) {
-  def this(b: BankDB) = this(b.code, b.name)
+case class Bank(id: Long, code: String, name: String) {
+  def this(b: BankDB) = this(b.id, b.code, b.name)
 }
 
 case class NormalizedStatus(code: String, message: String) {

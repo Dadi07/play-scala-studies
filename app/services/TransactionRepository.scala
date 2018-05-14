@@ -29,7 +29,7 @@ class TransactionRepositoryImpl extends TransactionRepository {
     } yield (t, e, bo, ba, n, c, ci, p)
 
     db.run(transactionQuery.result)
-      .map(mapTableRows(_))
+      .map(mapTableRows)
       .map {
         _.map { tuple =>
           val establishment = new Establishment(tuple._2)

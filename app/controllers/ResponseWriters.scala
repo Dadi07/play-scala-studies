@@ -5,6 +5,15 @@ import play.api.libs.json.{JsValue, Json, Writes}
 import services.TransactionSearchData
 
 object ResponseWriters {
+
+  implicit val bankWrites = new Writes[Bank] {
+    override def writes(b: Bank): JsValue = {
+      Json.obj("id" -> b.id,
+        "code" -> b.code,
+        "name" -> b.name)
+    }
+  }
+
   implicit val configurationWrites = new Writes[Configuration] {
     override def writes(config: Configuration): JsValue = {
       Json.obj("id" -> config.id,
