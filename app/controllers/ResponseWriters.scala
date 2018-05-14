@@ -109,16 +109,6 @@ object ResponseWriters {
     }
   }
 
-  //TODO ver uuma forma de os bankResponses nao duplicarem a informação do normalizedStatus
-  implicit val normalizedStatusFullDataWrites = new Writes[NormalizedStatusFullData] {
-    override def writes(n: NormalizedStatusFullData): JsValue = {
-      Json.obj("id" -> n.normalizedStatus.id,
-        "code" -> n.normalizedStatus.code,
-        "message" -> n.normalizedStatus.message,
-        "bankResponses" -> n.bankResponses)
-    }
-  }
-
   implicit val cascadeLogItemWrites = new Writes[CascadeLogItem] {
     override def writes(c: CascadeLogItem): JsValue = {
       Json.obj("bank" -> c.bank,
