@@ -4,73 +4,51 @@ import controllers.ResponseWriters.configurationWrites
 import domain.Configuration
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{AbstractController, ControllerComponents, Request}
 import services.ConfigurationRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+import scala.concurrent.Future
 
 @Singleton
-class ConfigurationController @Inject()(cc: ControllerComponents, configurationService: ConfigurationRepository) extends AbstractController(cc) {
+class ConfigurationController @Inject()(cc: ControllerComponents, configurationRepository: ConfigurationRepository) extends AbstractController(cc) {
 
-  def createConfiguration() = Action.async(parse.tolerantJson) { request: Request[JsValue] =>
-    val jsonBody = request.body
-
-    val key = (jsonBody \ "key").get.as[String]
-    val value = (jsonBody \ "value").get.as[String]
-
-    Logger.info(s"action=endpoint-request uri=/configurations method=POST request=$jsonBody")
-
-    val newConfiguration = Configuration(key = key, value = value)
-
-    val futureCreate = configurationService.createConfiguration(newConfiguration)
-
-    futureCreate.onComplete {
-      case Success(id) => Logger.info(s"Response created configuration with key=$key")
-      case Failure(t) => Logger.error(s"Response creation error for configuration with key=$key with $t")
-    }
-
-    futureCreate.map { id =>
-      Created(Json.toJson(Configuration(id, key, value)))
-    }
-  }
+  implicit val configurationReads = Json.reads[Configuration]
 
   def searchConfiguration(key: Option[String]) = Action.async {
     Logger.info(s"action=endpoint-request uri=/configurations method=GET params={key=$key}")
 
-    configurationService.getConfigurations(key)
-      .map { configs =>
-        Logger.info(s"Response for configuration with key=$key")
-
-        Ok(Json.toJson(configs))
-      }
-  }
-
-  def changeConfiguration(id: Long) = Action.async(parse.tolerantJson) { request: Request[JsValue] =>
-    val jsonBody = request.body
-
-    val key = (jsonBody \ "key").get.as[String]
-    val value = (jsonBody \ "value").get.as[String]
-
-    Logger.info(s"action=endpoint-request uri=/configurations/$id method=PUT request=$jsonBody")
-
-    val newConfiguration = Configuration(id, key, value)
-
-    configurationService.updateConfiguration(newConfiguration)
+    configurationRepository.findByKey(key)
       .map {
-        case 1 => Ok(Json.toJson(newConfiguration))
-        case 0 => NotFound
+        case Nil => NotFound
+        case configs =>
+          Logger.info(s"Response for configuration with key=$key")
+          Ok(Json.toJson(configs))
       }
   }
 
-  def removeConfiguration(id: Long) = Action.async {
-    Logger.info(s"action=endpoint-request uri=/configurations/$id method=DELETE")
+  def changeConfiguration(key: String) = Action.async(parse.tolerantJson) { request: Request[JsValue] =>
+     request.body.validate[Seq[String]] match {
+       case JsSuccess(values, _) =>
+         Logger.info(values.toString())
+         Future(Ok)
+       case JsError(erros) =>
+         Logger.info(erros.toString())
+         Future(BadRequest)
+     }
 
-    configurationService.deleteConfiguration(id)
-      .map {
-        case 1 => NoContent
-        case 0 => NotFound
-      }
-  }
+//     val key = (jsonBody \ "key").get.as[String]
+//     val value = (jsonBody \ "value").get.as[String]
+//
+//     Logger.info(s"action=endpoint-request uri=/configurations/$id method=PUT request=$jsonBody")
+//
+//     val newConfiguration = Configuration(id, key, value)
+//
+//     configurationRepository.updateConfiguration(newConfiguration)
+//       .map {
+//         case 1 => Ok(Json.toJson(newConfiguration))
+//         case 0 => NotFound
+//       }
+   }
 }

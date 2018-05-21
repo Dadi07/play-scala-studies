@@ -51,11 +51,7 @@ GET     /normalized-status/:id         controllers.NormalizedStatusController.se
 # routes for configuration
 GET     /configurations         controllers.ConfigurationController.searchConfiguration(key: Option[String])
 
-POST    /configurations         controllers.ConfigurationController.createConfiguration
-
-PUT     /configurations/:id     controllers.ConfigurationController.changeConfiguration(id: Long)
-
-DELETE  /configurations/:id     controllers.ConfigurationController.removeConfiguration(id: Long)
+PUT     /configurations/:key     controllers.ConfigurationController.changeConfiguration(key: String)
 
 # routes for transaction
 GET     /transactions/:id       controllers.TransactionController.searchTransaction(id: Long)

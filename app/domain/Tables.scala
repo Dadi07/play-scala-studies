@@ -11,7 +11,6 @@ object Tables {
   val bankResponseStatus = TableQuery[BankResponseStatusTable]
 
   val configurations = TableQuery[ConfigurationTable]
-  val configurationsMultValue = TableQuery[ConfigurationMultValueTable]
 
   val cascadeLogs = TableQuery[CascadeLogTable]
   val cascadeLogItems = TableQuery[CascadeLogItemTable]

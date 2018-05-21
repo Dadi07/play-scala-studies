@@ -3,28 +3,16 @@ package domain
 import slick.lifted.Tag
 import slick.jdbc.MySQLProfile.api._
 
-case class ConfigurationDB(id: Long, key: String, value: Option[String])
+case class ConfigurationDB(id: Long, key: String, value: String, index: Int)
 
-case class ConfigurationMultValueDB(id: Long, configurationId: Long, index: Int, value: Option[String])
-
-class ConfigurationTable(tag: Tag) extends Table[ConfigurationDB](tag, "configuration") {
+class ConfigurationTable(tag: Tag) extends Table[ConfigurationDB](tag, "config") {
   def id = column[Long]("idt_config", O.PrimaryKey, O.AutoInc)
 
-  def key = column[String]("des_key")
+  def key = column[String]("cod_key")
 
-  def value = column[Option[String]]("des_value")
+  def value = column[String]("des_value")
 
-  def * = (id, key, value) <> ((ConfigurationDB.apply _).tupled, ConfigurationDB.unapply)
-}
+  def index = column[Int]("num_index")
 
-class ConfigurationMultValueTable(tag: Tag) extends Table[ConfigurationMultValueDB](tag, "configuration_mult_value") {
-  def id = column[Long]("idt_config_multv", O.PrimaryKey, O.AutoInc)
-
-  def configurationId = column[Long]("idt_config")
-
-  def index = column[Int]("des_index")
-
-  def value = column[Option[String]]("des_value")
-
-  def * = (id, configurationId, index, value) <> ((ConfigurationMultValueDB.apply _).tupled, ConfigurationMultValueDB.unapply)
+  def * = (id, key, value, index) <> ((ConfigurationDB.apply _).tupled, ConfigurationDB.unapply)
 }

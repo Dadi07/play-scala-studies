@@ -16,9 +16,8 @@ object ResponseWriters {
 
   implicit val configurationWrites = new Writes[Configuration] {
     override def writes(config: Configuration): JsValue = {
-      Json.obj("id" -> config.id,
-        "key" -> config.key,
-        "value" -> config.value)
+      Json.obj("key" -> config.key,
+        "values" -> config.values)
     }
   }
 
