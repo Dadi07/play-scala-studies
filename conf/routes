@@ -56,4 +56,4 @@ PUT     /configurations/:key     controllers.ConfigurationController.changeConfi
 # routes for transaction
 GET     /transactions/:id       controllers.TransactionController.searchTransaction(id: Long)
 
-GET     /transactions           controllers.TransactionController.searchTransactions(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String], status: Option[String], amount: Option[Int])
+GET     /transactions           controllers.TransactionController.searchTransactions(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bankAgreement: Option[String], bank: Option[String], status: Option[String], amount: Option[Int])

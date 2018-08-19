@@ -13,7 +13,7 @@ case class TransactionDB(id: Long,
                          paidAmount: Option[Int],
                          paymentDate: Option[LocalDate],
                          boletoId: Long,
-                         bankId: Option[Long],
+                         bankAgreementId: Option[Long],
                          nsu: String,
                          nsuDate: LocalDate,
                          normalizedStatusId: Option[Long],
@@ -88,7 +88,7 @@ class TransactionTable(tag: Tag) extends Table[TransactionDB](tag, "boleto_trans
 
   def boletoId = column[Long]("idt_boleto")
 
-  def bankId = column[Option[Long]]("idt_bank")
+  def bankAgreementId = column[Option[Long]]("idt_bank_agreement")
 
   def nsu = column[String]("cod_nsu")
 
@@ -110,13 +110,13 @@ class TransactionTable(tag: Tag) extends Table[TransactionDB](tag, "boleto_trans
 
   def deleted = column[Boolean]("flg_deleted")
 
-  def * = (id, referenceCode, establishmentId, status, paidAmount, paymentDate, boletoId, bankId, nsu, nsuDate, normalizedStatusId, cascadeLogId, bankResponseCode, bankResponseStatus, notificationUrl, creation, updated, deleted) <> ((TransactionDB.apply _).tupled, TransactionDB.unapply)
+  def * = (id, referenceCode, establishmentId, status, paidAmount, paymentDate, boletoId, bankAgreementId, nsu, nsuDate, normalizedStatusId, cascadeLogId, bankResponseCode, bankResponseStatus, notificationUrl, creation, updated, deleted) <> ((TransactionDB.apply _).tupled, TransactionDB.unapply)
 
   def establishment = foreignKey("esta_boletran_fk", establishmentId, Tables.establishments)(_.id)
 
   def boleto = foreignKey("bole_boletran_fk", boletoId, Tables.boletos)(_.id)
 
-  def bank = foreignKey("bank_boletran_fk", bankId, Tables.banks)(_.id)
+  def bankAgreement = foreignKey("bankag_boletran_fk", bankAgreementId, Tables.bankAgreements)(_.id)
 
   def normalizedStatus = foreignKey("normstat_boletran_fk", normalizedStatusId, Tables.normalizedStatus)(_.id)
 

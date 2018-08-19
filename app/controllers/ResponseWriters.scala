@@ -143,7 +143,7 @@ object ResponseWriters {
         "reference_code" -> t.referenceCode,
         "establishment" -> t.establishment,
         "status" -> normalizedStatusSimpleJson(t.normalizedStatus),
-        "bank" -> Json.obj("name" -> t.bank.map(_.code),
+        "bank" -> Json.obj("name" -> t.bankAgreement.map(_.bank.code),
           "response" -> Json.obj("code" -> t.bankResponseCode,
             "message" -> t.bankResponseStatus)),
         "boleto" -> t.boleto,
@@ -161,6 +161,7 @@ object ResponseWriters {
         "reference_code" -> t.referenceCode,
         "establishment" -> t.establishment,
         "bank_number" -> t.bankNumber,
+        "bankAgreement" -> t.bankAgreement,
         "bank" -> t.bank,
         "amount" -> t.amount,
         "status" -> t.status)

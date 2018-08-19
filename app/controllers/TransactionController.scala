@@ -26,8 +26,8 @@ class TransactionController @Inject()(cc: ControllerComponents, transactionRepos
       }
   }
 
-  def searchTransactions(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bank: Option[String], status: Option[String], amount: Option[Int]) = Action.async {
-    val transactionFilters = TransactionFilters(referenceCode, bankNumber, establishment, bank, Option.empty, status, amount)
+  def searchTransactions(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bankAgreement: Option[String], bank: Option[String], status: Option[String], amount: Option[Int]) = Action.async {
+    val transactionFilters = TransactionFilters(referenceCode, bankNumber, establishment, bankAgreement, bank, Option.empty, status, amount) // TODO entender o que eu tava pensando qnd coloquei o normalizedStatus no filtro
     Logger.info(s"action=endpoint-request uri=/transacions method=GET $transactionFilters")
     transactionRepository.findTransactionsByFilter(transactionFilters)
       .map { seq =>

@@ -4,6 +4,7 @@ import slick.lifted.TableQuery
 
 object Tables {
   val banks = TableQuery[BankTable]
+  val bankAgreements = TableQuery[BankAgreementTable]
 
   val establishments = TableQuery[EstablishmentTable]
 

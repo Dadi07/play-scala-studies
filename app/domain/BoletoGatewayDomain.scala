@@ -25,6 +25,10 @@ case class Bank(id: Long, code: String, name: String) {
   def this(b: BankDB) = this(b.id, b.code, b.name)
 }
 
+case class BankAgreement(id: Long, code: String, companyName: String, agency: String, documentNumber: String, bank: Bank) {
+  def this(b: BankAgreementDB, bank: Bank) = this(b.id, b.agreementCode, b.companyName, b.agency, b.documentNumber, bank)
+}
+
 case class NormalizedStatus(id: Long, code: String, message: String) {
   def this(n: NormalizedStatusDB) = this(n.id, n.code, n.message)
 }
@@ -37,8 +41,8 @@ case class CascadeLog(rule: String, items: Seq[CascadeLogItem]) {
   def this(c: CascadeLogDB, items: Seq[CascadeLogItem]) = this(c.ruleCode, items)
 }
 
-case class CascadeLogItem(bank: String, responseCode: Option[String], responseMessage: Option[String], exception: Option[String], creation: LocalDateTime) {
-  def this(c: CascadeLogItemDB) = this(c.codeBank, c.responseCode, c.responseMessage, c.exception, c.creation)
+case class CascadeLogItem(bank: String, agreementCode: String, responseCode: Option[String], responseMessage: Option[String], exception: Option[String], creation: LocalDateTime) {
+  def this(c: CascadeLogItemDB) = this(c.codeBank, c.agreementCode, c.responseCode, c.responseMessage, c.exception, c.creation)
 }
 
 case class Fine(percentage: Option[Int], interestPercentage: Option[Int], startDate: LocalDate)
@@ -91,7 +95,7 @@ case class Transaction(id: Long,
                        paidAmount: Option[Int],
                        paymentDate: Option[LocalDate],
                        boleto: Boleto,
-                       bank: Option[Bank],
+                       bankAgreement: Option[BankAgreement],
                        nsu: String,
                        nsuDate: LocalDate,
                        normalizedStatus: Option[NormalizedStatus],
@@ -103,8 +107,8 @@ case class Transaction(id: Long,
                        creation: LocalDateTime,
                        updated: LocalDateTime,
                        deleted: Boolean) {
-  def this(t: TransactionDB, establishment: Establishment, boleto: Boleto, bank: Option[Bank], normalizedStatus: Option[NormalizedStatus], cascadeLog: Option[CascadeLog], payments: Seq[Payment]) = {
-    this(t.id, t.referenceCode, establishment, t.status, t.paidAmount, t.paymentDate, boleto, bank, t.nsu, t.nsuDate, normalizedStatus, cascadeLog,
+  def this(t: TransactionDB, establishment: Establishment, boleto: Boleto, bankAgreement: Option[BankAgreement], normalizedStatus: Option[NormalizedStatus], cascadeLog: Option[CascadeLog], payments: Seq[Payment]) = {
+    this(t.id, t.referenceCode, establishment, t.status, t.paidAmount, t.paymentDate, boleto, bankAgreement, t.nsu, t.nsuDate, normalizedStatus, cascadeLog,
       t.bankResponseCode, t.bankResponseStatus, t.notificationUrl, payments, t.creation, t.updated, t.deleted)
   }
 }
