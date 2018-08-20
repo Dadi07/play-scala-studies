@@ -7,6 +7,7 @@ object Tables {
   val bankAgreements = TableQuery[BankAgreementTable]
 
   val establishments = TableQuery[EstablishmentTable]
+  val establishmentBankAgreements = TableQuery[EstablishmentBankAgreementTable]
 
   val normalizedStatus = TableQuery[NormalizedStatusTable]
   val bankResponseStatus = TableQuery[BankResponseStatusTable]

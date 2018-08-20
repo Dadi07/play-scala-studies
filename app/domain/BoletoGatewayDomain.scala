@@ -2,8 +2,6 @@ package domain
 
 import java.time.{LocalDate, LocalDateTime}
 
-import sun.awt.SunHints.Key
-
 object TransactionStatus extends Enumeration {
 
   protected case class Val(code: String) extends super.Val
@@ -27,6 +25,10 @@ case class Bank(id: Long, code: String, name: String) {
 
 case class BankAgreement(id: Long, code: String, companyName: String, agency: String, documentNumber: String, bank: Bank) {
   def this(b: BankAgreementDB, bank: Bank) = this(b.id, b.agreementCode, b.companyName, b.agency, b.documentNumber, bank)
+}
+
+case class EstablishmentBankAgreement(id: Long, establishment: Establishment, bankAgreement: BankAgreement) {
+  def this(e: EstablishmentBankAgreementDB, establishment: Establishment, bankAgreement: BankAgreement) = this(e.id, establishment, bankAgreement)
 }
 
 case class NormalizedStatus(id: Long, code: String, message: String) {
