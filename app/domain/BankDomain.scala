@@ -6,6 +6,8 @@ case class BankDB(id: Long, code: String, name: String, febrabanCode: String, de
 
 case class BankAgreementDB(id: Long, companyName: String, agreementCode: String, agency: String, documentNumber: String, bankId: Long, deleted: Boolean)
 
+case class DocumentNumberDB(id: Long, documenNumber: String, bankAgreementId: Long)
+
 class BankTable(tag: Tag) extends Table[BankDB](tag, "bank") {
   def id = column[Long]("idt_bank", O.PrimaryKey, O.AutoInc)
 
@@ -38,4 +40,16 @@ class BankAgreementTable(tag: Tag) extends Table[BankAgreementDB](tag, "bank_agr
   def * = (id, companyName, agreementCode, agency, documentNumber, bankId, deleted) <> ((BankAgreementDB.apply _).tupled, BankAgreementDB.unapply)
 
   def bank = foreignKey("bank_bankagre_fk", bankId, Tables.banks)(_.id)
+}
+
+class DocumentNumberTable(tag: Tag) extends Table[DocumentNumberDB](tag, "document_number") {
+  def id = column[Long]("idt_document_number", O.PrimaryKey, O.AutoInc)
+
+  def documentNumber = column[String]("cod_document_number")
+
+  def bankAgreementId = column[Long]("idt_bank_agreement")
+
+  def * = (id, documentNumber, bankAgreementId) <> ((DocumentNumberDB.apply _).tupled, DocumentNumberDB.unapply)
+
+  def bankAgreement = foreignKey("bankagree_docnum_fk", bankAgreementId, Tables.bankAgreements)(_.id)
 }

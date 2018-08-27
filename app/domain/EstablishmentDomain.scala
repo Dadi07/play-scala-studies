@@ -17,7 +17,7 @@ class EstablishmentTable(tag: Tag) extends Table[EstablishmentDB](tag, "establis
   def * = (id, name, code) <> ((EstablishmentDB.apply _).tupled, EstablishmentDB.unapply)
 }
 
-class EstablishmentBankAgreementTable(tag: Tag) extends Table[EstablishmentBankAgreementDB](tag, "establishment") {
+class EstablishmentBankAgreementTable(tag: Tag) extends Table[EstablishmentBankAgreementDB](tag, "establishment_bank_agreement") {
   def id = column[Long]("idt_establishment_bank_agreement", O.PrimaryKey, O.AutoInc)
 
   def establishmentId = column[Long]("idt_establishment")

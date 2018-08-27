@@ -11,6 +11,8 @@ sealed trait BankAgreementRepository {
 
   def findById(id: Long)(implicit executionContext: ExecutionContext): Future[Option[BankAgreement]]
 
+  def findBankNumber(agreementId: Long)(implicit executionContext: ExecutionContext): Future[Option[String]]
+
   def findBankAgreementsByFilter(agreementCode: Option[String], bank: Option[String])(implicit executionContext: ExecutionContext): Future[Seq[BankAgreementSearchData]]
 }
 
@@ -47,5 +49,14 @@ class BankAgreementRepositoryImpl extends BankAgreementRepository {
 
     db.run(bankAgreementQuery.result)
       .map(_.map(result => BankAgreementSearchData(result._1.id, result._1.agreementCode, result._2.code, result._1.companyName)))
+  }
+
+  override def findBankNumber(agreementId: Long)(implicit executionContext: ExecutionContext): Future[Option[String]] = {
+    val query = Tables.documenNumbers.filter(_.bankAgreementId === agreementId).result
+
+    db.run(query)
+      .map { seq =>
+        if (seq.isEmpty) Option.empty else Option(seq.head.documenNumber)
+      }
   }
 }

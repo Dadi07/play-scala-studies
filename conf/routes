@@ -44,6 +44,8 @@ GET     /establishment                    controllers.MeuController.establishmen
 GET     /banks         controllers.BankController.searchBank(code: Option[String])
 
 # routes for bankAgreement
+GET     /bankAgreements/:id       controllers.BankAgreementController.searchBankAgreement(id: Long)
+
 GET     /bankAgreements           controllers.BankAgreementController.searchBankAgreements(agreementCode: Option[String], bank: Option[String])
 
 # routes for normalizedStatus
