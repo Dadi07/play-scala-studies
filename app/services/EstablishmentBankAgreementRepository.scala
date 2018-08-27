@@ -14,24 +14,24 @@ sealed trait EstablishmentBankAgreementRepository {
 @Singleton
 class EstablishmentBankAgreementRepositoryImpl extends EstablishmentBankAgreementRepository {
   override def findByEstablishment(establishment: Establishment)(implicit ec: ExecutionContext): Future[Seq[EstablishmentBankAgreement]] = {
-    val dbioAction = Tables.establishmentBankAgreements.filter(_.establishmentId === establishment.id).result
+    val establishmentBankAgreementFilter = Tables.establishmentBankAgreements.filter(_.establishmentId === establishment.id)
 
-    return RepositoryUtils.db.run(dbioAction)
-        .map { seq =>
-          seq.map( e => new EstablishmentBankAgreement(e.id, establishment, ))
-        }
+    val dbioAction = for {
+      ((eba, ba), b) <- establishmentBankAgreementFilter join Tables.bankAgreements on (_.bankAgreementId === _.id) join Tables.banks on (_._2.bankId === _.id)
+    } yield (eba, ba, b)
+
+    RepositoryUtils.db.run(dbioAction.result)
+      .map(_.map(result => EstablishmentBankAgreement(result._1.id, establishment, new BankAgreement(result._2, new Bank(result._3)))))
   }
 
   override def findByBankAgreement(bankAgreement: BankAgreement)(implicit ec: ExecutionContext): Future[Seq[EstablishmentBankAgreement]] = {
-    val baseQuery = Tables.establishmentBankAgreements.filter(_.bankAgreementId === bankAgreement.id)
+    val establishmentBankAgreementFilter = Tables.establishmentBankAgreements.filter(_.bankAgreementId === bankAgreement.id)
 
     val dbioAction = for {
-      (eba, e)
+      (eba, e) <- establishmentBankAgreementFilter join Tables.establishments on (_.establishmentId === _.id)
     } yield (eba, e)
 
-    return RepositoryUtils.db.run(dbioAction)
-      .map { seq =>
-        seq.map( e => new EstablishmentBankAgreement(e.id, e, bankAgreement))
-      }
+    RepositoryUtils.db.run(dbioAction.result)
+      .map(_.map(result => EstablishmentBankAgreement(result._1.id, new Establishment(result._2), bankAgreement)))
   }
 }

@@ -2,7 +2,7 @@ package controllers
 
 import domain._
 import play.api.libs.json.{JsObject, JsValue, Json, Writes}
-import services.{NormalizedStatusFullData, TransactionSearchData}
+import services.{BankAgreementSearchData, NormalizedStatusFullData, TransactionSearchData}
 
 object ResponseWriters {
 
@@ -11,6 +11,15 @@ object ResponseWriters {
       Json.obj("id" -> b.id,
         "code" -> b.code,
         "name" -> b.name)
+    }
+  }
+
+  implicit val bankAgreementSearchWrites = new Writes[BankAgreementSearchData] {
+    override def writes(b: BankAgreementSearchData): JsValue = {
+      Json.obj("id" -> b.id,
+        "company_name" -> b.companyName,
+        "agreement_code" -> b.agreementCode,
+        "bank" -> b.bank)
     }
   }
 
