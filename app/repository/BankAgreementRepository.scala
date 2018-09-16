@@ -29,13 +29,7 @@ class BankAgreementRepositoryImpl extends BankAgreementRepository {
     } yield (ba, b)
 
     db.run(bankAgreementQuery.result)
-      .map { seq =>
-        if(seq.isEmpty) {
-          Option.empty
-        } else {
-          Option(new BankAgreement(seq.head._1, new Bank(seq.head._2)))
-        }
-      }
+      .map(_.headOption.map(b => new BankAgreement(b._1, new Bank(b._2))))
   }
 
 
@@ -55,8 +49,6 @@ class BankAgreementRepositoryImpl extends BankAgreementRepository {
     val query = Tables.documenNumbers.filter(_.bankAgreementId === agreementId).result
 
     db.run(query)
-      .map { seq =>
-        if (seq.isEmpty) Option.empty else Option(seq.head.documenNumber)
-      }
+      .map(_.headOption.map(_.documenNumber))
   }
 }

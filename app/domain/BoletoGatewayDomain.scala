@@ -23,6 +23,10 @@ case class Merchant(id: Long, name: String, code: String, password: String) {
   def this(m: MerchantDB) = this(m.id, m.name, m.code, m.password)
 }
 
+case class MerchantEstablishment(id: Long, merchant: Merchant, establishment: Establishment) {
+  def this(me: MerchantEstablishmentDB, merchant: Merchant, establishment: Establishment) = this(me.id, merchant, establishment)
+}
+
 case class Bank(id: Long, code: String, name: String) {
   def this(b: BankDB) = this(b.id, b.code, b.name)
 }

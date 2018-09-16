@@ -29,9 +29,12 @@ class Module extends AbstractModule {
     bind(classOf[TransactionRepository]).to(classOf[TransactionRepositoryImpl])
     bind(classOf[BankRepository]).to(classOf[BankRepositoryImpl])
     bind(classOf[MerchantRepository]).to(classOf[MerchantRepositoryImpl])
+    bind(classOf[EstablishmentRepository]).to(classOf[EstablishmentRepositoryImpl])
     bind(classOf[BankAgreementRepository]).to(classOf[BankAgreementRepositoryImpl])
     bind(classOf[BankAgreementService]).to(classOf[BankAgreementServiceImpl])
+    bind(classOf[EstablishmentService]).to(classOf[EstablishmentServiceImpl])
     bind(classOf[EstablishmentBankAgreementRepository]).to(classOf[EstablishmentBankAgreementRepositoryImpl])
+    bind(classOf[MerchantEstablishmentRepository]).to(classOf[MerchantEstablishmentRepositoryImpl])
     bind(classOf[NormalizedStatusRepository]).to(classOf[NormalizedStatusRepositoryImpl])
     bind(classOf[BankResponseStatusRepository]).to(classOf[BankResponseStatusRepositoryImpl])
   }

@@ -43,6 +43,11 @@ GET     /establishment                    controllers.MeuController.establishmen
 # routes for merchant
 GET     /merchants         controllers.MerchantController.searchMerchant(code: Option[String])
 
+# routes for establishment
+GET     /establishments         controllers.EstablishmentController.searchEstablishments(establishmentCode: Option[String], merchantCode: Option[String])
+
+GET     /establishments/:id     controllers.EstablishmentController.searchEstablishment(id: Long)
+
 # routes for bank
 GET     /banks         controllers.BankController.searchBank(code: Option[String])
 

@@ -41,7 +41,8 @@ object ResponseWriters {
 
   implicit val establishmentWrites = new Writes[Establishment] {
     override def writes(e: Establishment): JsValue = {
-      Json.obj("code" -> e.code,
+      Json.obj("id" -> e.id,
+        "code" -> e.code,
         "name" -> e.name)
     }
   }
