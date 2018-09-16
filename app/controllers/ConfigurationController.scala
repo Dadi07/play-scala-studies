@@ -6,7 +6,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{AbstractController, ControllerComponents, Request}
-import services.ConfigurationRepository
+import repository.ConfigurationRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

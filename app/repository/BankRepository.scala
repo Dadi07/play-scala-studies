@@ -1,4 +1,4 @@
-package services
+package repository
 
 import domain.{Bank, Tables}
 import javax.inject.Singleton

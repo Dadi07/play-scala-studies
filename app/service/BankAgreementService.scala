@@ -1,7 +1,8 @@
-package services
+package service
 
 import domain.{BankAgreement, Establishment}
 import javax.inject.{Inject, Singleton}
+import repository.{BankAgreementRepository, EstablishmentBankAgreementRepository}
 
 import scala.concurrent.{ExecutionContext, Future}
 

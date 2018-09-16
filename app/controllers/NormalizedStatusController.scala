@@ -5,7 +5,7 @@ import domain.BankResponseStatus
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.{AbstractController, ControllerComponents}
-import services.{NormalizedStatusFullData, NormalizedStatusRepository}
+import repository.{NormalizedStatusFullData, NormalizedStatusRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

@@ -1,8 +1,8 @@
-package services
+package repository
 
 import domain._
 import javax.inject.Singleton
-import services.RepositoryUtils.db
+import repository.RepositoryUtils.db
 import slick.jdbc.MySQLProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -2,7 +2,8 @@ package controllers
 
 import domain._
 import play.api.libs.json.{JsObject, JsValue, Json, Writes}
-import services.{BankAgreementFullData, BankAgreementSearchData, NormalizedStatusFullData, TransactionSearchData}
+import repository.{BankAgreementSearchData, TransactionSearchData}
+import service.BankAgreementFullData
 
 object ResponseWriters {
 

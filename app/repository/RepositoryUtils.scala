@@ -1,4 +1,4 @@
-package services
+package repository
 
 import slick.jdbc.MySQLProfile.api._
 

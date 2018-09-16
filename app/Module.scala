@@ -1,7 +1,8 @@
 import com.google.inject.AbstractModule
 import java.time.Clock
 
-import services._
+import repository._
+import service._
 
 /**
  * This class is a Guice module that tells Guice how to bind several

@@ -5,7 +5,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
-import services.{TransactionFilters, TransactionRepository}
+import repository.{TransactionFilters, TransactionRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

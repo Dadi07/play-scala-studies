@@ -4,7 +4,7 @@ import controllers.ResponseWriters.bankWrites
 import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
-import services.BankRepository
+import repository.BankRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

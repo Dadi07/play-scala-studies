@@ -1,4 +1,4 @@
-package services
+package repository
 
 import domain._
 import javax.inject.{Inject, Singleton}
