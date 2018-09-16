@@ -31,6 +31,14 @@ object ResponseWriters {
     }
   }
 
+  implicit val merchantWrites = new Writes[Merchant] {
+    override def writes(m: Merchant): JsValue = {
+      Json.obj("id" -> m.id,
+        "code" -> m.code,
+        "name" -> m.name)
+    }
+  }
+
   implicit val establishmentWrites = new Writes[Establishment] {
     override def writes(e: Establishment): JsValue = {
       Json.obj("code" -> e.code,

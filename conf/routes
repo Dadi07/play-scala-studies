@@ -40,6 +40,9 @@ GET     /establishment                    controllers.MeuController.establishmen
 #GET     /establishments/:establishment/transactions/:referenceCode      controllers.MeuController.searchTransaction(establishment, referenceCode)
 
 
+# routes for merchant
+GET     /merchants         controllers.MerchantController.searchMerchant(code: Option[String])
+
 # routes for bank
 GET     /banks         controllers.BankController.searchBank(code: Option[String])
 
