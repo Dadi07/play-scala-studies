@@ -43,6 +43,11 @@ case class NormalizedStatus(id: Long, code: String, message: String) {
   def this(n: NormalizedStatusDB) = this(n.id, n.code, n.message)
 }
 
+object NormalizedStatus {
+  val PaidCode = "2"
+  val PartiallyPaidCode = "5"
+}
+
 case class BankResponseStatus(id: Long, code: String, message: String, internalError: Boolean, bank: Bank, normalizedStatus: NormalizedStatus) {
   def this(b: BankResponseStatusDB, bank: Bank, normalizedStatus: NormalizedStatus) = this(b.id, b.code, b.message, b.internalError, bank, normalizedStatus)
 }
@@ -101,14 +106,14 @@ case class Boleto(barcode: Option[String],
 case class Transaction(id: Long,
                        referenceCode: String,
                        establishment: Establishment,
-                       status: String, // TODO ENUM
-                       paidAmount: Option[Int],
-                       paymentDate: Option[LocalDate],
+                       var status: String, // TODO ENUM
+                       var paidAmount: Option[Int],
+                       var paymentDate: Option[LocalDate],
                        boleto: Boleto,
                        bankAgreement: Option[BankAgreement],
                        nsu: String,
                        nsuDate: LocalDate,
-                       normalizedStatus: Option[NormalizedStatus],
+                       var normalizedStatus: Option[NormalizedStatus],
                        cascadeLog: Option[CascadeLog],
                        bankResponseCode: Option[String],
                        bankResponseStatus: Option[String],
@@ -125,13 +130,14 @@ case class Transaction(id: Long,
 
 case class Payment(id: Long,
                    amount: Int,
+                   creator: String,
                    nsa: String,
                    nsr: String,
                    paymentDate: LocalDate,
                    creditDate: LocalDate,
                    notificationId: Option[String],
                    creation: LocalDate) {
-  def this(p: PaymentDB) = this(p.id, p.amount, p.nsa, p.nsr, p.paymentDate, p.creation, p.notificationId, p.creation)
+  def this(p: PaymentDB) = this(p.id, p.amount, p.creator, p.nsa, p.nsr, p.paymentDate, p.creation, p.notificationId, p.creation)
 }
 
 case class Configuration(key: String, values: Seq[String]) {

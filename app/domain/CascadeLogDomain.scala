@@ -2,7 +2,7 @@ package domain
 
 import java.time.LocalDateTime
 
-import domain.DomainUtils.localDateTimeConverter
+import domain.DomainUtils.LocalDateTimeConverter
 import slick.jdbc.MySQLProfile.api._
 import slick.lifted.Tag
 

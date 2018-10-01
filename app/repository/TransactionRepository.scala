@@ -1,5 +1,6 @@
 package repository
 
+import domain.DomainUtils.localDateConverter
 import domain._
 import javax.inject.Singleton
 import repository.RepositoryUtils.db
@@ -10,8 +11,8 @@ import scala.concurrent.{ExecutionContext, Future}
 sealed trait TransactionRepository {
 
   def findById(id: Long)(implicit executionContext: ExecutionContext): Future[Option[Transaction]]
-
   def findTransactionsByFilter(transactionFilters: TransactionFilters)(implicit executionContext: ExecutionContext): Future[Seq[TransactionSearchData]]
+  def updateStatus(transaction: Transaction): Future[Int]
 }
 
 case class TransactionFilters(referenceCode: Option[String], bankNumber: Option[String], establishment: Option[String], bankAgreement: Option[String], bank: Option[String], normalizedStatus: Option[String], status: Option[String], amount: Option[Int])
@@ -60,6 +61,12 @@ class TransactionRepositoryImpl extends TransactionRepository {
 
     db.run(transactionQuery.sortBy(_._1.desc).result)
       .map(_.map(t => TransactionSearchData(t._1, t._2, t._5, t._4, Option(t._7), Option(t._8), t._3, t._6)))
+  }
+
+  override def updateStatus(transaction: Transaction): Future[Int] = {
+    val query = for {t <- Tables.transactions.filter(_.id === transaction.id) } yield (t.status, t.paidAmount, t.paymentDate, t.normalizedStatusId)
+
+    db.run(query.update((transaction.status, transaction.paidAmount, transaction.paymentDate, transaction.normalizedStatus.map(_.id))))
   }
 
   private def mapTableRows(seq: Seq[(TransactionDB, EstablishmentDB, BoletoDB, BankAgreementDB, BankDB, NormalizedStatusDB, Option[CascadeLogDB], Option[CascadeLogItemDB], Option[PaymentDB])]): Option[(TransactionDB, EstablishmentDB, BoletoDB, BankAgreementDB, BankDB, NormalizedStatusDB, Option[CascadeLogDB], Seq[CascadeLogItemDB], Seq[PaymentDB])] = {

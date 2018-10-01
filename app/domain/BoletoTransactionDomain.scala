@@ -2,7 +2,7 @@ package domain
 
 import java.time.{LocalDate, LocalDateTime}
 
-import domain.DomainUtils.{localDateConverter, localDateTimeConverter}
+import domain.DomainUtils.{localDateConverter, LocalDateTimeConverter}
 import slick.jdbc.MySQLProfile.api._
 import slick.lifted.Tag
 
@@ -63,6 +63,7 @@ case class BoletoDB(id: Long,
 case class PaymentDB(id: Long,
                      transactionId: Long,
                      amount: Int,
+                     creator: String,
                      nsa: String,
                      nsr: String,
                      paymentDate: LocalDate,
@@ -84,7 +85,7 @@ class TransactionTable(tag: Tag) extends Table[TransactionDB](tag, "boleto_trans
 
   def paidAmount = column[Option[Int]]("num_paid_amount")
 
-  def paymentDate = column[Option[LocalDate]]("num_paid_amount")
+  def paymentDate = column[Option[LocalDate]]("dat_payment")
 
   def boletoId = column[Long]("idt_boleto")
 
@@ -207,6 +208,8 @@ class PaymentTable(tag: Tag) extends Table[PaymentDB](tag, "payment") {
 
   def amount = column[Int]("num_paid_amount")
 
+  def creator = column[String]("cod_creator")
+
   def nsa = column[String]("cod_nsa")
 
   def nsr = column[String]("cod_nsr")
@@ -223,7 +226,7 @@ class PaymentTable(tag: Tag) extends Table[PaymentDB](tag, "payment") {
 
   def deleted = column[Boolean]("flg_deleted")
 
-  override def * = (id, transactionId, amount, nsa, nsr, paymentDate, creditDate, notificationId, creation, updated, deleted) <> ((PaymentDB.apply _).tupled, PaymentDB.unapply)
+  override def * = (id, transactionId, amount, creator, nsa, nsr, paymentDate, creditDate, notificationId, creation, updated, deleted) <> ((PaymentDB.apply _).tupled, PaymentDB.unapply)
 
   def transaction = foreignKey("boletran_pay_fk", transactionId, Tables.transactions)(_.id)
 }

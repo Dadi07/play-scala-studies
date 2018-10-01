@@ -160,6 +160,7 @@ object ResponseWriters {
   implicit val paymentWrites = new Writes[Payment] {
     override def writes(p: Payment): JsValue = {
       Json.obj("amount" -> p.amount,
+        "created_by" -> p.creator,
         "payment_date" -> p.paymentDate,
         "credit_date" -> p.creditDate,
         "nsa" -> p.nsa,
